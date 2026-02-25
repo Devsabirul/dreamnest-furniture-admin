@@ -1,537 +1,1175 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>DoorCraft Studio — Dashboard</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css"/>
-</head>
-<body class="dashboard-page">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DoorCraft Studio — Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body class="dashboard-page">
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
 
-<!-- Toast -->
-<div id="toast" class="toast"></div>
-
-<!-- Loading Overlay -->
-<div id="pageLoader" class="page-loader">
-  <div class="loader-ring"></div>
-</div>
-
-<!-- Sidebar Overlay (mobile) -->
-<div id="sidebarOverlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
-
-<!-- Sidebar -->
-<aside id="sidebar" class="sidebar">
-  <div class="sidebar-header">
-    <div class="brand-icon">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-        <polyline points="9 22 9 12 15 12 15 22"/>
-      </svg>
+    <!-- Loading Overlay -->
+    <div id="pageLoader" class="page-loader">
+      <div class="loader-ring"></div>
     </div>
-    <div class="sidebar-brand">
-      <span class="brand-name">DoorCraft</span>
-      <span class="brand-studio">Studio</span>
-    </div>
-    <button class="sidebar-close" onclick="closeSidebar()">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-      </svg>
-    </button>
-  </div>
 
-  <nav class="sidebar-nav">
-    <a href="#" class="nav-item active" data-page="overview" onclick="navigate(event,'overview')">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-        <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
-      </svg>
-      <span>Overview</span>
-    </a>
-    <a href="#" class="nav-item" data-page="customers" onclick="navigate(event,'customers')">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-        <circle cx="9" cy="7" r="4"/>
-        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-      </svg>
-      <span>Customers</span>
-    </a>
-    <a href="#" class="nav-item" data-page="workers" onclick="navigate(event,'workers')">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-        <circle cx="12" cy="7" r="4"/>
-      </svg>
-      <span>Workers</span>
-    </a>
-    <a href="#" class="nav-item" data-page="transactions" onclick="navigate(event,'transactions')">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-      </svg>
-      <span>Transactions</span>
-    </a>
-    <a href="#" class="nav-item" data-page="reports" onclick="navigate(event,'reports')">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
-        <line x1="6" y1="20" x2="6" y2="14"/>
-      </svg>
-      <span>Reports</span>
-    </a>
-  </nav>
+    <!-- Sidebar Overlay (mobile) -->
+    <div
+      id="sidebarOverlay"
+      class="sidebar-overlay"
+      onclick="closeSidebar()"
+    ></div>
 
-  <div class="sidebar-footer">
-    <div class="user-card">
-      <div class="user-avatar" id="userAvatar">A</div>
-      <div class="user-info">
-        <span class="user-name" id="userName">Admin</span>
-        <span class="user-role">Administrator</span>
-      </div>
-    </div>
-    <button class="logout-btn" onclick="handleLogout()">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-        <polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
-      </svg>
-      Logout
-    </button>
-  </div>
-</aside>
-
-<!-- Main Content -->
-<div class="main-wrapper">
-  <!-- Topbar -->
-  <header class="topbar">
-    <button class="hamburger" onclick="openSidebar()">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
-      </svg>
-    </button>
-    <h2 class="page-title" id="pageTitle">Overview</h2>
-    <div class="topbar-right">
-      <div class="topbar-date" id="topbarDate"></div>
-    </div>
-  </header>
-
-  <!-- Page Content -->
-  <main class="content-area" id="contentArea">
-
-    <!-- ===================== OVERVIEW PAGE ===================== -->
-    <section id="page-overview" class="page active">
-      <div class="stat-grid">
-        <div class="stat-card">
-          <div class="stat-icon blue"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg></div>
-          <div class="stat-body">
-            <p class="stat-label">Total Orders</p>
-            <h3 class="stat-value" id="totalOrders">—</h3>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon green"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
-          <div class="stat-body">
-            <p class="stat-label">Total Income</p>
-            <h3 class="stat-value" id="totalIncome">—</h3>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon red"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
-          <div class="stat-body">
-            <p class="stat-label">Total Expenses</p>
-            <h3 class="stat-value" id="totalExpenses">—</h3>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon purple"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
-          <div class="stat-body">
-            <p class="stat-label">Net Profit</p>
-            <h3 class="stat-value" id="netProfit">—</h3>
-          </div>
-        </div>
-      </div>
-
-      <div class="two-col-grid">
-        <div class="card">
-          <div class="card-header">
-            <h3 class="card-title">Recent Customer Payments</h3>
-          </div>
-          <div class="table-wrapper">
-            <table class="data-table">
-              <thead><tr><th>Customer</th><th>Amount</th><th>Type</th><th>Date</th></tr></thead>
-              <tbody id="recentCustomerPayments"></tbody>
-            </table>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-header">
-            <h3 class="card-title">Recent Worker Payments</h3>
-          </div>
-          <div class="table-wrapper">
-            <table class="data-table">
-              <thead><tr><th>Worker</th><th>Amount</th><th>Reason</th><th>Date</th></tr></thead>
-              <tbody id="recentWorkerPayments"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <div class="card mt-20">
-        <div class="card-header">
-          <h3 class="card-title">Due Customers</h3>
-        </div>
-        <div class="table-wrapper">
-          <table class="data-table">
-            <thead><tr><th>Name</th><th>Phone</th><th>Total</th><th>Paid</th><th>Due</th><th>Status</th></tr></thead>
-            <tbody id="dueCustomers"></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===================== CUSTOMERS PAGE ===================== -->
-    <section id="page-customers" class="page">
-      <div class="page-actions">
-        <div class="search-group">
-          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-icon">
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+            <polyline points="9 22 9 12 15 12 15 22" />
           </svg>
-          <input type="text" id="customerSearch" class="search-input" placeholder="Search by name or phone…" oninput="filterCustomers()"/>
         </div>
-        <select id="customerStatusFilter" class="filter-select" onchange="filterCustomers()">
-          <option value="">All Statuses</option>
-          <option>Pending</option>
-          <option>In Production</option>
-          <option>Completed</option>
-          <option>Delivered</option>
-        </select>
-        <button class="btn-primary" onclick="openModal('addCustomerModal')">+ Add Customer</button>
-      </div>
-      <div class="card">
-        <div class="table-wrapper">
-          <table class="data-table">
-            <thead><tr><th>Name</th><th>Phone</th><th>Total</th><th>Advance</th><th>Due</th><th>Status</th><th>Actions</th></tr></thead>
-            <tbody id="customersTable"></tbody>
-          </table>
+        <div class="sidebar-brand">
+          <span class="brand-name">DoorCraft</span>
+          <span class="brand-studio">Studio</span>
         </div>
-      </div>
-    </section>
-
-    <!-- ===================== WORKERS PAGE ===================== -->
-    <section id="page-workers" class="page">
-      <div class="page-actions">
-        <div class="search-group">
-          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        <button class="sidebar-close" onclick="closeSidebar()">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
           </svg>
-          <input type="text" id="workerSearch" class="search-input" placeholder="Search workers…" oninput="filterWorkers()"/>
-        </div>
-        <button class="btn-primary" onclick="openModal('addWorkerModal')">+ Add Worker</button>
+        </button>
       </div>
-      <div class="card">
-        <div class="table-wrapper">
-          <table class="data-table">
-            <thead><tr><th>Name</th><th>Phone</th><th>Role</th><th>Salary Type</th><th>Actions</th></tr></thead>
-            <tbody id="workersTable"></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
 
-    <!-- ===================== TRANSACTIONS PAGE ===================== -->
-    <section id="page-transactions" class="page">
-      <div class="page-actions">
-        <select id="txTypeFilter" class="filter-select" onchange="filterTransactions()">
-          <option value="">All Types</option>
-          <option value="income">Income</option>
-          <option value="expense">Expense</option>
-        </select>
-        <input type="date" id="txDateFilter" class="filter-select" onchange="filterTransactions()"/>
-        <button class="btn-outline" onclick="clearTxFilters()">Clear</button>
-      </div>
-      <div class="stat-grid two-col">
-        <div class="stat-card mini">
-          <div class="stat-icon green"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg></div>
-          <div class="stat-body"><p class="stat-label">Filtered Income</p><h3 class="stat-value small" id="txIncomeTotal">₹0</h3></div>
-        </div>
-        <div class="stat-card mini">
-          <div class="stat-icon red"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/></svg></div>
-          <div class="stat-body"><p class="stat-label">Filtered Expenses</p><h3 class="stat-value small" id="txExpenseTotal">₹0</h3></div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="table-wrapper">
-          <table class="data-table">
-            <thead><tr><th>Type</th><th>Reference</th><th>Amount</th><th>Date</th></tr></thead>
-            <tbody id="transactionsTable"></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
+      <nav class="sidebar-nav">
+        <a
+          href="#"
+          class="nav-item active"
+          data-page="overview"
+          onclick="navigate(event, 'overview')"
+        >
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <rect x="3" y="3" width="7" height="7" />
+            <rect x="14" y="3" width="7" height="7" />
+            <rect x="14" y="14" width="7" height="7" />
+            <rect x="3" y="14" width="7" height="7" />
+          </svg>
+          <span>Overview</span>
+        </a>
+        <a
+          href="#"
+          class="nav-item"
+          data-page="customers"
+          onclick="navigate(event, 'customers')"
+        >
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+            <circle cx="9" cy="7" r="4" />
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+          </svg>
+          <span>Customers</span>
+        </a>
+        <a
+          href="#"
+          class="nav-item"
+          data-page="workers"
+          onclick="navigate(event, 'workers')"
+        >
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+          <span>Workers</span>
+        </a>
+        <a
+          href="#"
+          class="nav-item"
+          data-page="transactions"
+          onclick="navigate(event, 'transactions')"
+        >
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <line x1="12" y1="1" x2="12" y2="23" />
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+          </svg>
+          <span>Transactions</span>
+        </a>
+        <a
+          href="#"
+          class="nav-item"
+          data-page="reports"
+          onclick="navigate(event, 'reports')"
+        >
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <line x1="18" y1="20" x2="18" y2="10" />
+            <line x1="12" y1="20" x2="12" y2="4" />
+            <line x1="6" y1="20" x2="6" y2="14" />
+          </svg>
+          <span>Reports</span>
+        </a>
+      </nav>
 
-    <!-- ===================== REPORTS PAGE ===================== -->
-    <section id="page-reports" class="page">
-      <div class="page-actions">
-        <select id="reportYear" class="filter-select" onchange="loadReports()"></select>
-      </div>
-      <div class="stat-grid three-col">
-        <div class="stat-card"><div class="stat-icon green"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg></div><div class="stat-body"><p class="stat-label">Annual Income</p><h3 class="stat-value" id="annualIncome">₹0</h3></div></div>
-        <div class="stat-card"><div class="stat-icon red"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/></svg></div><div class="stat-body"><p class="stat-label">Annual Expenses</p><h3 class="stat-value" id="annualExpenses">₹0</h3></div></div>
-        <div class="stat-card"><div class="stat-icon purple"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div><div class="stat-body"><p class="stat-label">Annual Profit</p><h3 class="stat-value" id="annualProfit">₹0</h3></div></div>
-      </div>
-      <div class="card">
-        <div class="card-header"><h3 class="card-title">Monthly Performance</h3></div>
-        <div class="chart-container">
-          <canvas id="reportChart"></canvas>
-        </div>
-        <div class="chart-legend">
-          <span class="legend-dot green"></span><span>Income</span>
-          <span class="legend-dot red"></span><span>Expenses</span>
-          <span class="legend-dot blue"></span><span>Profit</span>
-        </div>
-      </div>
-      <div class="card mt-20">
-        <div class="card-header"><h3 class="card-title">Monthly Breakdown</h3></div>
-        <div class="table-wrapper">
-          <table class="data-table">
-            <thead><tr><th>Month</th><th>Income</th><th>Expenses</th><th>Profit</th></tr></thead>
-            <tbody id="reportTable"></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-  </main>
-</div>
-
-<!-- ============= MODALS ============= -->
-
-<!-- Add Customer Modal -->
-<div id="addCustomerModal" class="modal-overlay" onclick="closeModalOutside(event,'addCustomerModal')">
-  <div class="modal">
-    <div class="modal-header">
-      <h3>Add New Customer</h3>
-      <button class="modal-close" onclick="closeModal('addCustomerModal')">×</button>
-    </div>
-    <form id="addCustomerForm" onsubmit="submitAddCustomer(event)">
-      <div class="modal-body">
-        <div class="form-row">
-          <div class="form-group"><label class="form-label">Name *</label><input type="text" name="name" class="form-input" required/></div>
-          <div class="form-group"><label class="form-label">Phone *</label><input type="tel" name="phone" class="form-input" required/></div>
-        </div>
-        <div class="form-group"><label class="form-label">Address</label><input type="text" name="address" class="form-input"/></div>
-        <div class="form-group"><label class="form-label">Design Details</label><textarea name="design_details" class="form-input textarea" rows="3"></textarea></div>
-        <div class="form-row">
-          <div class="form-group"><label class="form-label">Total Amount (₹)</label><input type="number" name="total_amount" class="form-input" min="0" oninput="calcDue(this.closest('form'))" required/></div>
-          <div class="form-group"><label class="form-label">Advance Amount (₹)</label><input type="number" name="advance_amount" class="form-input" min="0" oninput="calcDue(this.closest('form'))"/></div>
-        </div>
-        <div class="form-group"><label class="form-label">Due Amount (₹)</label><input type="number" name="due_amount" class="form-input" readonly style="background:#f1f5f9"/></div>
-        <div class="form-group"><label class="form-label">Status</label>
-          <select name="status" class="form-input">
-            <option>Pending</option><option>In Production</option><option>Completed</option><option>Delivered</option>
-          </select>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn-outline" onclick="closeModal('addCustomerModal')">Cancel</button>
-        <button type="submit" class="btn-primary">Save Customer</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<!-- Edit Customer Modal -->
-<div id="editCustomerModal" class="modal-overlay" onclick="closeModalOutside(event,'editCustomerModal')">
-  <div class="modal">
-    <div class="modal-header">
-      <h3>Edit Customer</h3>
-      <button class="modal-close" onclick="closeModal('editCustomerModal')">×</button>
-    </div>
-    <form id="editCustomerForm" onsubmit="submitEditCustomer(event)">
-      <input type="hidden" name="id"/>
-      <div class="modal-body">
-        <div class="form-row">
-          <div class="form-group"><label class="form-label">Name *</label><input type="text" name="name" class="form-input" required/></div>
-          <div class="form-group"><label class="form-label">Phone *</label><input type="tel" name="phone" class="form-input" required/></div>
-        </div>
-        <div class="form-group"><label class="form-label">Address</label><input type="text" name="address" class="form-input"/></div>
-        <div class="form-group"><label class="form-label">Design Details</label><textarea name="design_details" class="form-input textarea" rows="3"></textarea></div>
-        <div class="form-row">
-          <div class="form-group"><label class="form-label">Total Amount (₹)</label><input type="number" name="total_amount" class="form-input" min="0" oninput="calcDue(this.closest('form'))" required/></div>
-          <div class="form-group"><label class="form-label">Advance Amount (₹)</label><input type="number" name="advance_amount" class="form-input" min="0" oninput="calcDue(this.closest('form'))"/></div>
-        </div>
-        <div class="form-group"><label class="form-label">Due Amount (₹)</label><input type="number" name="due_amount" class="form-input" readonly style="background:#f1f5f9"/></div>
-        <div class="form-group"><label class="form-label">Status</label>
-          <select name="status" class="form-input">
-            <option>Pending</option><option>In Production</option><option>Completed</option><option>Delivered</option>
-          </select>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn-outline" onclick="closeModal('editCustomerModal')">Cancel</button>
-        <button type="submit" class="btn-primary">Update Customer</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<!-- Add Payment Modal (Customer) -->
-<div id="addCustomerPaymentModal" class="modal-overlay" onclick="closeModalOutside(event,'addCustomerPaymentModal')">
-  <div class="modal modal-sm">
-    <div class="modal-header">
-      <h3>Add Customer Payment</h3>
-      <button class="modal-close" onclick="closeModal('addCustomerPaymentModal')">×</button>
-    </div>
-    <form id="addCustomerPaymentForm" onsubmit="submitCustomerPayment(event)">
-      <input type="hidden" name="customer_id"/>
-      <input type="hidden" name="customer_name"/>
-      <div class="modal-body">
-        <div class="form-group"><label class="form-label">Amount (₹)</label><input type="number" name="amount" class="form-input" min="1" required/></div>
-        <div class="form-group"><label class="form-label">Payment Type</label>
-          <select name="payment_type" class="form-input">
-            <option>Advance</option><option>Due</option><option>Full</option>
-          </select>
-        </div>
-        <div class="form-group"><label class="form-label">Date</label><input type="date" name="date" class="form-input" required/></div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn-outline" onclick="closeModal('addCustomerPaymentModal')">Cancel</button>
-        <button type="submit" class="btn-primary">Add Payment</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<!-- View Customer Modal -->
-<div id="viewCustomerModal" class="modal-overlay" onclick="closeModalOutside(event,'viewCustomerModal')">
-  <div class="modal">
-    <div class="modal-header">
-      <h3>Customer Details</h3>
-      <button class="modal-close" onclick="closeModal('viewCustomerModal')">×</button>
-    </div>
-    <div id="viewCustomerContent" class="modal-body"></div>
-    <div class="modal-footer">
-      <button class="btn-outline" onclick="closeModal('viewCustomerModal')">Close</button>
-    </div>
-  </div>
-</div>
-
-<!-- Add Worker Modal -->
-<div id="addWorkerModal" class="modal-overlay" onclick="closeModalOutside(event,'addWorkerModal')">
-  <div class="modal">
-    <div class="modal-header">
-      <h3>Add New Worker</h3>
-      <button class="modal-close" onclick="closeModal('addWorkerModal')">×</button>
-    </div>
-    <form id="addWorkerForm" onsubmit="submitAddWorker(event)">
-      <div class="modal-body">
-        <div class="form-row">
-          <div class="form-group"><label class="form-label">Name *</label><input type="text" name="name" class="form-input" required/></div>
-          <div class="form-group"><label class="form-label">Phone</label><input type="tel" name="phone" class="form-input"/></div>
-        </div>
-        <div class="form-group"><label class="form-label">Address</label><input type="text" name="address" class="form-input"/></div>
-        <div class="form-row">
-          <div class="form-group"><label class="form-label">Role</label><input type="text" name="role" class="form-input" placeholder="e.g. Carpenter"/></div>
-          <div class="form-group"><label class="form-label">Salary Type</label>
-            <select name="salary_type" class="form-input"><option>Monthly</option><option>Per Project</option></select>
+      <div class="sidebar-footer">
+        <div class="user-card">
+          <div class="user-avatar" id="userAvatar">A</div>
+          <div class="user-info">
+            <span class="user-name" id="userName">Admin</span>
+            <span class="user-role">Administrator</span>
           </div>
         </div>
+        <button class="logout-btn" onclick="handleLogout()">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" y1="12" x2="9" y2="12" />
+          </svg>
+          Logout
+        </button>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn-outline" onclick="closeModal('addWorkerModal')">Cancel</button>
-        <button type="submit" class="btn-primary">Save Worker</button>
-      </div>
-    </form>
-  </div>
-</div>
+    </aside>
 
-<!-- Edit Worker Modal -->
-<div id="editWorkerModal" class="modal-overlay" onclick="closeModalOutside(event,'editWorkerModal')">
-  <div class="modal">
-    <div class="modal-header">
-      <h3>Edit Worker</h3>
-      <button class="modal-close" onclick="closeModal('editWorkerModal')">×</button>
-    </div>
-    <form id="editWorkerForm" onsubmit="submitEditWorker(event)">
-      <input type="hidden" name="id"/>
-      <div class="modal-body">
-        <div class="form-row">
-          <div class="form-group"><label class="form-label">Name *</label><input type="text" name="name" class="form-input" required/></div>
-          <div class="form-group"><label class="form-label">Phone</label><input type="tel" name="phone" class="form-input"/></div>
+    <!-- Main Content -->
+    <div class="main-wrapper">
+      <!-- Topbar -->
+      <header class="topbar">
+        <button class="hamburger" onclick="openSidebar()">
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
+        </button>
+        <h2 class="page-title" id="pageTitle">Overview</h2>
+        <div class="topbar-right">
+          <div class="topbar-date" id="topbarDate"></div>
         </div>
-        <div class="form-group"><label class="form-label">Address</label><input type="text" name="address" class="form-input"/></div>
-        <div class="form-row">
-          <div class="form-group"><label class="form-label">Role</label><input type="text" name="role" class="form-input"/></div>
-          <div class="form-group"><label class="form-label">Salary Type</label>
-            <select name="salary_type" class="form-input"><option>Monthly</option><option>Per Project</option></select>
+      </header>
+
+      <!-- Page Content -->
+      <main class="content-area" id="contentArea">
+        <!-- ===================== OVERVIEW PAGE ===================== -->
+        <section id="page-overview" class="page active">
+          <div class="stat-grid">
+            <div class="stat-card">
+              <div class="stat-icon blue">
+                <svg
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path
+                    d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"
+                  />
+                  <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
+                </svg>
+              </div>
+              <div class="stat-body">
+                <p class="stat-label">Total Orders</p>
+                <h3 class="stat-value" id="totalOrders">—</h3>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon green">
+                <svg
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <line x1="12" y1="1" x2="12" y2="23" />
+                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                </svg>
+              </div>
+              <div class="stat-body">
+                <p class="stat-label">Total Income</p>
+                <h3 class="stat-value" id="totalIncome">—</h3>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon red">
+                <svg
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path
+                    d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+                  />
+                </svg>
+              </div>
+              <div class="stat-body">
+                <p class="stat-label">Total Expenses</p>
+                <h3 class="stat-value" id="totalExpenses">—</h3>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon purple">
+                <svg
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+                  <polyline points="17 6 23 6 23 12" />
+                </svg>
+              </div>
+              <div class="stat-body">
+                <p class="stat-label">Net Profit</p>
+                <h3 class="stat-value" id="netProfit">—</h3>
+              </div>
+            </div>
           </div>
+
+          <div class="two-col-grid">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Recent Customer Payments</h3>
+              </div>
+              <div class="table-wrapper">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Customer</th>
+                      <th>Amount</th>
+                      <th>Type</th>
+                      <th>Date</th>
+                    </tr>
+                  </thead>
+                  <tbody id="recentCustomerPayments"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Recent Worker Payments</h3>
+              </div>
+              <div class="table-wrapper">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Worker</th>
+                      <th>Amount</th>
+                      <th>Reason</th>
+                      <th>Date</th>
+                    </tr>
+                  </thead>
+                  <tbody id="recentWorkerPayments"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="card mt-20">
+            <div class="card-header">
+              <h3 class="card-title">Due Customers</h3>
+            </div>
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Total</th>
+                    <th>Paid</th>
+                    <th>Due</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="dueCustomers"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================== CUSTOMERS PAGE ===================== -->
+        <section id="page-customers" class="page">
+          <div class="page-actions">
+            <div class="search-group">
+              <svg
+                class="search-icon"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+              <input
+                type="text"
+                id="customerSearch"
+                class="search-input"
+                placeholder="Search by name or phone…"
+                oninput="filterCustomers()"
+              />
+            </div>
+            <select
+              id="customerStatusFilter"
+              class="filter-select"
+              onchange="filterCustomers()"
+            >
+              <option value="">All Statuses</option>
+              <option>Pending</option>
+              <option>In Production</option>
+              <option>Completed</option>
+              <option>Delivered</option>
+            </select>
+            <button class="btn-primary" onclick="openModal('addCustomerModal')">
+              + Add Customer
+            </button>
+          </div>
+          <div class="card">
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Total</th>
+                    <th>Advance</th>
+                    <th>Due</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="customersTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================== WORKERS PAGE ===================== -->
+        <section id="page-workers" class="page">
+          <div class="page-actions">
+            <div class="search-group">
+              <svg
+                class="search-icon"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+              <input
+                type="text"
+                id="workerSearch"
+                class="search-input"
+                placeholder="Search workers…"
+                oninput="filterWorkers()"
+              />
+            </div>
+            <button class="btn-primary" onclick="openModal('addWorkerModal')">
+              + Add Worker
+            </button>
+          </div>
+          <div class="card">
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Role</th>
+                    <th>Salary Type</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="workersTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================== TRANSACTIONS PAGE ===================== -->
+        <section id="page-transactions" class="page">
+          <div class="page-actions">
+            <select
+              id="txTypeFilter"
+              class="filter-select"
+              onchange="filterTransactions()"
+            >
+              <option value="">All Types</option>
+              <option value="income">Income</option>
+              <option value="expense">Expense</option>
+            </select>
+            <input
+              type="date"
+              id="txDateFilter"
+              class="filter-select"
+              onchange="filterTransactions()"
+            />
+            <button class="btn-outline" onclick="clearTxFilters()">
+              Clear
+            </button>
+          </div>
+          <div class="stat-grid two-col">
+            <div class="stat-card mini">
+              <div class="stat-icon green">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+                </svg>
+              </div>
+              <div class="stat-body">
+                <p class="stat-label">Filtered Income</p>
+                <h3 class="stat-value small" id="txIncomeTotal">৳0</h3>
+              </div>
+            </div>
+            <div class="stat-card mini">
+              <div class="stat-icon red">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <polyline points="23 18 13.5 8.5 8.5 13.5 1 6" />
+                </svg>
+              </div>
+              <div class="stat-body">
+                <p class="stat-label">Filtered Expenses</p>
+                <h3 class="stat-value small" id="txExpenseTotal">৳0</h3>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Type</th>
+                    <th>Reference</th>
+                    <th>Amount</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+                <tbody id="transactionsTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================== REPORTS PAGE ===================== -->
+        <section id="page-reports" class="page">
+          <div class="page-actions">
+            <select
+              id="reportYear"
+              class="filter-select"
+              onchange="loadReports()"
+            ></select>
+          </div>
+          <div class="stat-grid three-col">
+            <div class="stat-card">
+              <div class="stat-icon green">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+                </svg>
+              </div>
+              <div class="stat-body">
+                <p class="stat-label">Annual Income</p>
+                <h3 class="stat-value" id="annualIncome">৳0</h3>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon red">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <polyline points="23 18 13.5 8.5 8.5 13.5 1 6" />
+                </svg>
+              </div>
+              <div class="stat-body">
+                <p class="stat-label">Annual Expenses</p>
+                <h3 class="stat-value" id="annualExpenses">৳0</h3>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon purple">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+                  <polyline points="17 6 23 6 23 12" />
+                </svg>
+              </div>
+              <div class="stat-body">
+                <p class="stat-label">Annual Profit</p>
+                <h3 class="stat-value" id="annualProfit">৳0</h3>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Monthly Performance</h3>
+            </div>
+            <div class="chart-container">
+              <canvas id="reportChart"></canvas>
+            </div>
+            <div class="chart-legend">
+              <span class="legend-dot green"></span><span>Income</span>
+              <span class="legend-dot red"></span><span>Expenses</span>
+              <span class="legend-dot blue"></span><span>Profit</span>
+            </div>
+          </div>
+          <div class="card mt-20">
+            <div class="card-header">
+              <h3 class="card-title">Monthly Breakdown</h3>
+            </div>
+            <div class="table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Month</th>
+                    <th>Income</th>
+                    <th>Expenses</th>
+                    <th>Profit</th>
+                  </tr>
+                </thead>
+                <tbody id="reportTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- ============= MODALS ============= -->
+
+    <!-- Add Customer Modal -->
+    <div
+      id="addCustomerModal"
+      class="modal-overlay"
+      onclick="closeModalOutside(event, 'addCustomerModal')"
+    >
+      <div class="modal">
+        <div class="modal-header">
+          <h3>Add New Customer</h3>
+          <button class="modal-close" onclick="closeModal('addCustomerModal')">
+            ×
+          </button>
+        </div>
+        <form id="addCustomerForm" onsubmit="submitAddCustomer(event)">
+          <div class="modal-body">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Name *</label
+                ><input type="text" name="name" class="form-input" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Phone *</label
+                ><input type="tel" name="phone" class="form-input" required />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Address</label
+              ><input type="text" name="address" class="form-input" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Design Details</label
+              ><textarea
+                name="design_details"
+                class="form-input textarea"
+                rows="3"
+              ></textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Total Amount (৳)</label
+                ><input
+                  type="number"
+                  name="total_amount"
+                  class="form-input"
+                  min="0"
+                  oninput="calcDue(this.closest('form'))"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Advance Amount (৳)</label
+                ><input
+                  type="number"
+                  name="advance_amount"
+                  class="form-input"
+                  min="0"
+                  oninput="calcDue(this.closest('form'))"
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Due Amount (৳)</label
+              ><input
+                type="number"
+                name="due_amount"
+                class="form-input"
+                readonly
+                style="background: #f1f5f9"
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Status</label>
+              <select name="status" class="form-input">
+                <option>Pending</option>
+                <option>In Production</option>
+                <option>Completed</option>
+                <option>Delivered</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn-outline"
+              onclick="closeModal('addCustomerModal')"
+            >
+              Cancel
+            </button>
+            <button type="submit" class="btn-primary">Save Customer</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Edit Customer Modal -->
+    <div
+      id="editCustomerModal"
+      class="modal-overlay"
+      onclick="closeModalOutside(event, 'editCustomerModal')"
+    >
+      <div class="modal">
+        <div class="modal-header">
+          <h3>Edit Customer</h3>
+          <button class="modal-close" onclick="closeModal('editCustomerModal')">
+            ×
+          </button>
+        </div>
+        <form id="editCustomerForm" onsubmit="submitEditCustomer(event)">
+          <input type="hidden" name="id" />
+          <div class="modal-body">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Name *</label
+                ><input type="text" name="name" class="form-input" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Phone *</label
+                ><input type="tel" name="phone" class="form-input" required />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Address</label
+              ><input type="text" name="address" class="form-input" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Design Details</label
+              ><textarea
+                name="design_details"
+                class="form-input textarea"
+                rows="3"
+              ></textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Total Amount (৳)</label
+                ><input
+                  type="number"
+                  name="total_amount"
+                  class="form-input"
+                  min="0"
+                  oninput="calcDue(this.closest('form'))"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Advance Amount (৳)</label
+                ><input
+                  type="number"
+                  name="advance_amount"
+                  class="form-input"
+                  min="0"
+                  oninput="calcDue(this.closest('form'))"
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Due Amount (৳)</label
+              ><input
+                type="number"
+                name="due_amount"
+                class="form-input"
+                readonly
+                style="background: #f1f5f9"
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Status</label>
+              <select name="status" class="form-input">
+                <option>Pending</option>
+                <option>In Production</option>
+                <option>Completed</option>
+                <option>Delivered</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn-outline"
+              onclick="closeModal('editCustomerModal')"
+            >
+              Cancel
+            </button>
+            <button type="submit" class="btn-primary">Update Customer</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Add Payment Modal (Customer) -->
+    <div
+      id="addCustomerPaymentModal"
+      class="modal-overlay"
+      onclick="closeModalOutside(event, 'addCustomerPaymentModal')"
+    >
+      <div class="modal modal-sm">
+        <div class="modal-header">
+          <h3>Add Customer Payment</h3>
+          <button
+            class="modal-close"
+            onclick="closeModal('addCustomerPaymentModal')"
+          >
+            ×
+          </button>
+        </div>
+        <form
+          id="addCustomerPaymentForm"
+          onsubmit="submitCustomerPayment(event)"
+        >
+          <input type="hidden" name="customer_id" />
+          <input type="hidden" name="customer_name" />
+          <div class="modal-body">
+            <div class="form-group">
+              <label class="form-label">Amount (৳)</label
+              ><input
+                type="number"
+                name="amount"
+                class="form-input"
+                min="1"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Payment Type</label>
+              <select name="payment_type" class="form-input">
+                <option>Advance</option>
+                <option>Due</option>
+                <option>Full</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Date</label
+              ><input type="date" name="date" class="form-input" required />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn-outline"
+              onclick="closeModal('addCustomerPaymentModal')"
+            >
+              Cancel
+            </button>
+            <button type="submit" class="btn-primary">Add Payment</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- View Customer Modal -->
+    <div
+      id="viewCustomerModal"
+      class="modal-overlay"
+      onclick="closeModalOutside(event, 'viewCustomerModal')"
+    >
+      <div class="modal">
+        <div class="modal-header">
+          <h3>Customer Details</h3>
+          <button class="modal-close" onclick="closeModal('viewCustomerModal')">
+            ×
+          </button>
+        </div>
+        <div id="viewCustomerContent" class="modal-body"></div>
+        <div class="modal-footer">
+          <button class="btn-outline" onclick="closeModal('viewCustomerModal')">
+            Close
+          </button>
         </div>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn-outline" onclick="closeModal('editWorkerModal')">Cancel</button>
-        <button type="submit" class="btn-primary">Update Worker</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<!-- Add Worker Payment Modal -->
-<div id="addWorkerPaymentModal" class="modal-overlay" onclick="closeModalOutside(event,'addWorkerPaymentModal')">
-  <div class="modal modal-sm">
-    <div class="modal-header">
-      <h3>Add Worker Payment</h3>
-      <button class="modal-close" onclick="closeModal('addWorkerPaymentModal')">×</button>
     </div>
-    <form id="addWorkerPaymentForm" onsubmit="submitWorkerPayment(event)">
-      <input type="hidden" name="worker_id"/>
-      <input type="hidden" name="worker_name"/>
-      <div class="modal-body">
-        <div class="form-group"><label class="form-label">Amount (₹)</label><input type="number" name="amount" class="form-input" min="1" required/></div>
-        <div class="form-group"><label class="form-label">Payment Reason</label>
-          <select name="payment_reason" class="form-input"><option>Salary</option><option>Bonus</option><option>Other</option></select>
+
+    <!-- Add Worker Modal -->
+    <div
+      id="addWorkerModal"
+      class="modal-overlay"
+      onclick="closeModalOutside(event, 'addWorkerModal')"
+    >
+      <div class="modal">
+        <div class="modal-header">
+          <h3>Add New Worker</h3>
+          <button class="modal-close" onclick="closeModal('addWorkerModal')">
+            ×
+          </button>
         </div>
-        <div class="form-group"><label class="form-label">Date</label><input type="date" name="payment_date" class="form-input" required/></div>
+        <form id="addWorkerForm" onsubmit="submitAddWorker(event)">
+          <div class="modal-body">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Name *</label
+                ><input type="text" name="name" class="form-input" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Phone</label
+                ><input type="tel" name="phone" class="form-input" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Address</label
+              ><input type="text" name="address" class="form-input" />
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Role</label
+                ><input
+                  type="text"
+                  name="role"
+                  class="form-input"
+                  placeholder="e.g. Carpenter"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Salary Type</label>
+                <select name="salary_type" class="form-input">
+                  <option>Monthly</option>
+                  <option>Per Project</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn-outline"
+              onclick="closeModal('addWorkerModal')"
+            >
+              Cancel
+            </button>
+            <button type="submit" class="btn-primary">Save Worker</button>
+          </div>
+        </form>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn-outline" onclick="closeModal('addWorkerPaymentModal')">Cancel</button>
-        <button type="submit" class="btn-primary">Add Payment</button>
+    </div>
+
+    <!-- Edit Worker Modal -->
+    <div
+      id="editWorkerModal"
+      class="modal-overlay"
+      onclick="closeModalOutside(event, 'editWorkerModal')"
+    >
+      <div class="modal">
+        <div class="modal-header">
+          <h3>Edit Worker</h3>
+          <button class="modal-close" onclick="closeModal('editWorkerModal')">
+            ×
+          </button>
+        </div>
+        <form id="editWorkerForm" onsubmit="submitEditWorker(event)">
+          <input type="hidden" name="id" />
+          <div class="modal-body">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Name *</label
+                ><input type="text" name="name" class="form-input" required />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Phone</label
+                ><input type="tel" name="phone" class="form-input" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Address</label
+              ><input type="text" name="address" class="form-input" />
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Role</label
+                ><input type="text" name="role" class="form-input" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Salary Type</label>
+                <select name="salary_type" class="form-input">
+                  <option>Monthly</option>
+                  <option>Per Project</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn-outline"
+              onclick="closeModal('editWorkerModal')"
+            >
+              Cancel
+            </button>
+            <button type="submit" class="btn-primary">Update Worker</button>
+          </div>
+        </form>
       </div>
-    </form>
-  </div>
-</div>
+    </div>
 
-<!-- Worker Payment History Modal -->
-<div id="workerHistoryModal" class="modal-overlay" onclick="closeModalOutside(event,'workerHistoryModal')">
-  <div class="modal">
-    <div class="modal-header">
-      <h3 id="workerHistoryTitle">Payment History</h3>
-      <button class="modal-close" onclick="closeModal('workerHistoryModal')">×</button>
+    <!-- Add Worker Payment Modal -->
+    <div
+      id="addWorkerPaymentModal"
+      class="modal-overlay"
+      onclick="closeModalOutside(event, 'addWorkerPaymentModal')"
+    >
+      <div class="modal modal-sm">
+        <div class="modal-header">
+          <h3>Add Worker Payment</h3>
+          <button
+            class="modal-close"
+            onclick="closeModal('addWorkerPaymentModal')"
+          >
+            ×
+          </button>
+        </div>
+        <form id="addWorkerPaymentForm" onsubmit="submitWorkerPayment(event)">
+          <input type="hidden" name="worker_id" />
+          <input type="hidden" name="worker_name" />
+          <div class="modal-body">
+            <div class="form-group">
+              <label class="form-label">Amount (৳)</label
+              ><input
+                type="number"
+                name="amount"
+                class="form-input"
+                min="1"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Payment Reason</label>
+              <select name="payment_reason" class="form-input">
+                <option>Salary</option>
+                <option>Bonus</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Date</label
+              ><input
+                type="date"
+                name="payment_date"
+                class="form-input"
+                required
+              />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn-outline"
+              onclick="closeModal('addWorkerPaymentModal')"
+            >
+              Cancel
+            </button>
+            <button type="submit" class="btn-primary">Add Payment</button>
+          </div>
+        </form>
+      </div>
     </div>
-    <div class="modal-body">
-      <table class="data-table">
-        <thead><tr><th>Amount</th><th>Reason</th><th>Date</th></tr></thead>
-        <tbody id="workerHistoryTable"></tbody>
-      </table>
-    </div>
-    <div class="modal-footer"><button class="btn-outline" onclick="closeModal('workerHistoryModal')">Close</button></div>
-  </div>
-</div>
 
-<!-- Confirm Delete Modal -->
-<div id="confirmModal" class="modal-overlay">
-  <div class="modal modal-sm confirm-modal">
-    <div class="confirm-icon">
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-        <path d="M10 11v6"/><path d="M14 11v6"/>
-      </svg>
+    <!-- Worker Payment History Modal -->
+    <div
+      id="workerHistoryModal"
+      class="modal-overlay"
+      onclick="closeModalOutside(event, 'workerHistoryModal')"
+    >
+      <div class="modal">
+        <div class="modal-header">
+          <h3 id="workerHistoryTitle">Payment History</h3>
+          <button
+            class="modal-close"
+            onclick="closeModal('workerHistoryModal')"
+          >
+            ×
+          </button>
+        </div>
+        <div class="modal-body">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Amount</th>
+                <th>Reason</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody id="workerHistoryTable"></tbody>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button
+            class="btn-outline"
+            onclick="closeModal('workerHistoryModal')"
+          >
+            Close
+          </button>
+        </div>
+      </div>
     </div>
-    <h3 class="confirm-title">Delete Record?</h3>
-    <p class="confirm-text" id="confirmText">This action cannot be undone.</p>
-    <div class="modal-footer center">
-      <button class="btn-outline" onclick="closeModal('confirmModal')">Cancel</button>
-      <button class="btn-danger" id="confirmDeleteBtn">Delete</button>
-    </div>
-  </div>
-</div>
 
-<script type="module" src="script.js"></script>
-</body>
+    <!-- Confirm Delete Modal -->
+    <div id="confirmModal" class="modal-overlay">
+      <div class="modal modal-sm confirm-modal">
+        <div class="confirm-icon">
+          <svg
+            width="32"
+            height="32"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <polyline points="3 6 5 6 21 6" />
+            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+            <path d="M10 11v6" />
+            <path d="M14 11v6" />
+          </svg>
+        </div>
+        <h3 class="confirm-title">Delete Record?</h3>
+        <p class="confirm-text" id="confirmText">
+          This action cannot be undone.
+        </p>
+        <div class="modal-footer center">
+          <button class="btn-outline" onclick="closeModal('confirmModal')">
+            Cancel
+          </button>
+          <button class="btn-danger" id="confirmDeleteBtn">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="script.js"></script>
+  </body>
 </html>

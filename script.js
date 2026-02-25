@@ -1,7 +1,7 @@
 /**
  * DoorCraft Studio — Admin Dashboard
  * Firebase v9 Modular SDK
- * 
+ *
  * IMPORTANT: Replace the firebaseConfig below with YOUR project's credentials.
  * Enable Authentication (Email/Password) and Firestore in Firebase Console.
  * Add a custom claim OR a Firestore "admins" collection with the user's UID.
@@ -12,7 +12,7 @@ import {
   getAuth,
   signInWithEmailAndPassword,
   signOut,
-  onAuthStateChanged
+  onAuthStateChanged,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
   getFirestore,
@@ -28,7 +28,7 @@ import {
   orderBy,
   onSnapshot,
   serverTimestamp,
-  Timestamp
+  Timestamp,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 // ============================================================
@@ -42,7 +42,7 @@ const firebaseConfig = {
   storageBucket: "dreamnest-furniture.firebasestorage.app",
   messagingSenderId: "225776215646",
   appId: "1:225776215646:web:521bdf47c7b961f65936cf",
-  measurementId: "G-KX98EXGWKV"
+  measurementId: "G-KX98EXGWKV",
 };
 
 const app = initializeApp(firebaseConfig);
@@ -54,24 +54,28 @@ const db = getFirestore(app);
 // ============================================================
 
 /** Format rupee currency */
-const rupee = (n) => "₹" + Number(n || 0).toLocaleString("en-IN");
+const rupee = (n) => "৳" + Number(n || 0).toLocaleString("en-IN");
 
 /** Format Firestore timestamp or JS date to readable string */
 const fmtDate = (ts) => {
   if (!ts) return "—";
   const d = ts.toDate ? ts.toDate() : new Date(ts);
-  return d.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
+  return d.toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
 };
 
 /** Get status badge HTML */
 const statusBadge = (status) => {
   const map = {
-    "Pending": "badge-pending",
+    Pending: "badge-pending",
     "In Production": "badge-production",
-    "Completed": "badge-completed",
-    "Delivered": "badge-delivered"
+    Completed: "badge-completed",
+    Delivered: "badge-delivered",
   };
-  return `<span class="badge ${map[status] || 'badge-pending'}">${status || "Pending"}</span>`;
+  return `<span class="badge ${map[status] || "badge-pending"}">${status || "Pending"}</span>`;
 };
 
 /** Empty state HTML */
@@ -82,38 +86,40 @@ const emptyRow = (cols, msg = "No records found") =>
 //  TOAST
 // ============================================================
 let toastTimer;
-window.showToast = function(msg, type = "success") {
+window.showToast = function (msg, type = "success") {
   const t = document.getElementById("toast");
   if (!t) return;
   t.textContent = msg;
   t.className = `toast ${type} show`;
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => { t.className = "toast"; }, 3500);
+  toastTimer = setTimeout(() => {
+    t.className = "toast";
+  }, 3500);
 };
 
 // ============================================================
 //  MODAL HELPERS
 // ============================================================
-window.openModal = function(id) {
+window.openModal = function (id) {
   const el = document.getElementById(id);
   if (el) el.classList.add("open");
 };
-window.closeModal = function(id) {
+window.closeModal = function (id) {
   const el = document.getElementById(id);
   if (el) el.classList.remove("open");
 };
-window.closeModalOutside = function(e, id) {
+window.closeModalOutside = function (e, id) {
   if (e.target === document.getElementById(id)) closeModal(id);
 };
 
 // ============================================================
 //  SIDEBAR
 // ============================================================
-window.openSidebar = function() {
+window.openSidebar = function () {
   document.getElementById("sidebar").classList.add("open");
   document.getElementById("sidebarOverlay").classList.add("visible");
 };
-window.closeSidebar = function() {
+window.closeSidebar = function () {
   document.getElementById("sidebar").classList.remove("open");
   document.getElementById("sidebarOverlay").classList.remove("visible");
 };
@@ -121,14 +127,23 @@ window.closeSidebar = function() {
 // ============================================================
 //  NAVIGATION
 // ============================================================
-window.navigate = function(e, page) {
+window.navigate = function (e, page) {
   e.preventDefault();
-  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-  document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
+  document
+    .querySelectorAll(".page")
+    .forEach((p) => p.classList.remove("active"));
+  document
+    .querySelectorAll(".nav-item")
+    .forEach((n) => n.classList.remove("active"));
   document.getElementById(`page-${page}`).classList.add("active");
   document.querySelector(`[data-page="${page}"]`).classList.add("active");
-  document.getElementById("pageTitle").textContent =
-    { overview: "Overview", customers: "Customers", workers: "Workers", transactions: "Transactions", reports: "Reports" }[page];
+  document.getElementById("pageTitle").textContent = {
+    overview: "Overview",
+    customers: "Customers",
+    workers: "Workers",
+    transactions: "Transactions",
+    reports: "Reports",
+  }[page];
   closeSidebar();
   if (page === "reports") loadReports();
 };
@@ -136,7 +151,7 @@ window.navigate = function(e, page) {
 // ============================================================
 //  PASSWORD TOGGLE
 // ============================================================
-window.togglePassword = function() {
+window.togglePassword = function () {
   const inp = document.getElementById("loginPassword");
   inp.type = inp.type === "password" ? "text" : "password";
 };
@@ -144,17 +159,20 @@ window.togglePassword = function() {
 // ============================================================
 //  CALC DUE (inline auto-calc)
 // ============================================================
-window.calcDue = function(form) {
+window.calcDue = function (form) {
   const total = parseFloat(form.elements.total_amount?.value) || 0;
   const advance = parseFloat(form.elements.advance_amount?.value) || 0;
-  if (form.elements.due_amount) form.elements.due_amount.value = Math.max(0, total - advance);
+  if (form.elements.due_amount)
+    form.elements.due_amount.value = Math.max(0, total - advance);
 };
 
 // ============================================================
 //  PAGE LOADER
 // ============================================================
-const showLoader = () => document.getElementById("pageLoader")?.classList.remove("hidden");
-const hideLoader = () => document.getElementById("pageLoader")?.classList.add("hidden");
+const showLoader = () =>
+  document.getElementById("pageLoader")?.classList.remove("hidden");
+const hideLoader = () =>
+  document.getElementById("pageLoader")?.classList.add("hidden");
 
 // ============================================================
 //  DATE
@@ -162,7 +180,12 @@ const hideLoader = () => document.getElementById("pageLoader")?.classList.add("h
 function setDate() {
   const el = document.getElementById("topbarDate");
   if (!el) return;
-  el.textContent = new Date().toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "long", year: "numeric" });
+  el.textContent = new Date().toLocaleDateString("en-IN", {
+    weekday: "short",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
 }
 
 // ============================================================
@@ -210,8 +233,10 @@ if (document.getElementById("page-overview")) {
     // Set user info
     const email = user.email || "Admin";
     const name = email.split("@")[0];
-    if (document.getElementById("userName")) document.getElementById("userName").textContent = name;
-    if (document.getElementById("userAvatar")) document.getElementById("userAvatar").textContent = name[0].toUpperCase();
+    if (document.getElementById("userName"))
+      document.getElementById("userName").textContent = name;
+    if (document.getElementById("userAvatar"))
+      document.getElementById("userAvatar").textContent = name[0].toUpperCase();
     setDate();
     initDashboard();
     hideLoader();
@@ -221,7 +246,7 @@ if (document.getElementById("page-overview")) {
 // ============================================================
 //  LOGOUT
 // ============================================================
-window.handleLogout = async function() {
+window.handleLogout = async function () {
   await signOut(auth);
   window.location.href = "index.html";
 };
@@ -252,12 +277,16 @@ function initDashboard() {
 // ============================================================
 function listenCustomers() {
   const q = query(collection(db, "customers"), orderBy("created_at", "desc"));
-  onSnapshot(q, (snap) => {
-    allCustomers = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    renderCustomersTable(allCustomers);
-    updateOverviewStats();
-    renderDueCustomers();
-  }, (err) => showToast("Error loading customers: " + err.message, "error"));
+  onSnapshot(
+    q,
+    (snap) => {
+      allCustomers = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      renderCustomersTable(allCustomers);
+      updateOverviewStats();
+      renderDueCustomers();
+    },
+    (err) => showToast("Error loading customers: " + err.message, "error"),
+  );
 }
 
 // ============================================================
@@ -265,11 +294,15 @@ function listenCustomers() {
 // ============================================================
 function listenCustomerPayments() {
   const q = query(collection(db, "customerPayments"), orderBy("date", "desc"));
-  onSnapshot(q, (snap) => {
-    allCustomerPayments = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    updateOverviewStats();
-    renderRecentCustomerPayments();
-  }, (err) => console.error(err));
+  onSnapshot(
+    q,
+    (snap) => {
+      allCustomerPayments = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      updateOverviewStats();
+      renderRecentCustomerPayments();
+    },
+    (err) => console.error(err),
+  );
 }
 
 // ============================================================
@@ -277,33 +310,51 @@ function listenCustomerPayments() {
 // ============================================================
 function listenWorkers() {
   const q = query(collection(db, "workers"), orderBy("created_at", "desc"));
-  onSnapshot(q, (snap) => {
-    allWorkers = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    renderWorkersTable(allWorkers);
-  }, (err) => showToast("Error loading workers: " + err.message, "error"));
+  onSnapshot(
+    q,
+    (snap) => {
+      allWorkers = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      renderWorkersTable(allWorkers);
+    },
+    (err) => showToast("Error loading workers: " + err.message, "error"),
+  );
 }
 
 // ============================================================
 //  WORKER PAYMENTS — Real-time listener
 // ============================================================
 function listenWorkerPayments() {
-  const q = query(collection(db, "workerPayments"), orderBy("payment_date", "desc"));
-  onSnapshot(q, (snap) => {
-    allWorkerPayments = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    updateOverviewStats();
-    renderRecentWorkerPayments();
-  }, (err) => console.error(err));
+  const q = query(
+    collection(db, "workerPayments"),
+    orderBy("payment_date", "desc"),
+  );
+  onSnapshot(
+    q,
+    (snap) => {
+      allWorkerPayments = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      updateOverviewStats();
+      renderRecentWorkerPayments();
+    },
+    (err) => console.error(err),
+  );
 }
 
 // ============================================================
 //  TRANSACTIONS — Real-time listener
 // ============================================================
 function listenTransactions() {
-  const q = query(collection(db, "transactions"), orderBy("created_at", "desc"));
-  onSnapshot(q, (snap) => {
-    allTransactions = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    renderTransactionsTable(allTransactions);
-  }, (err) => console.error(err));
+  const q = query(
+    collection(db, "transactions"),
+    orderBy("created_at", "desc"),
+  );
+  onSnapshot(
+    q,
+    (snap) => {
+      allTransactions = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      renderTransactionsTable(allTransactions);
+    },
+    (err) => console.error(err),
+  );
 }
 
 // ============================================================
@@ -311,11 +362,20 @@ function listenTransactions() {
 // ============================================================
 function updateOverviewStats() {
   const totalOrders = allCustomers.length;
-  const totalIncome = allCustomerPayments.reduce((s, p) => s + (p.amount || 0), 0);
-  const totalExpenses = allWorkerPayments.reduce((s, p) => s + (p.amount || 0), 0);
+  const totalIncome = allCustomerPayments.reduce(
+    (s, p) => s + (p.amount || 0),
+    0,
+  );
+  const totalExpenses = allWorkerPayments.reduce(
+    (s, p) => s + (p.amount || 0),
+    0,
+  );
   const netProfit = totalIncome - totalExpenses;
 
-  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  const set = (id, val) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val;
+  };
   set("totalOrders", totalOrders);
   set("totalIncome", rupee(totalIncome));
   set("totalExpenses", rupee(totalExpenses));
@@ -333,33 +393,47 @@ async function renderRecentCustomerPayments() {
   const tbody = document.getElementById("recentCustomerPayments");
   if (!tbody) return;
   const recent = allCustomerPayments.slice(0, 8);
-  if (!recent.length) { tbody.innerHTML = emptyRow(4, "No payments yet"); return; }
+  if (!recent.length) {
+    tbody.innerHTML = emptyRow(4, "No payments yet");
+    return;
+  }
   // Resolve customer names
   const nameMap = {};
-  allCustomers.forEach(c => nameMap[c.id] = c.name);
-  tbody.innerHTML = recent.map(p => `
+  allCustomers.forEach((c) => (nameMap[c.id] = c.name));
+  tbody.innerHTML = recent
+    .map(
+      (p) => `
     <tr>
       <td>${nameMap[p.customer_id] || p.customer_id || "—"}</td>
       <td>${rupee(p.amount)}</td>
       <td><span class="badge badge-income">${p.payment_type}</span></td>
       <td>${fmtDate(p.date)}</td>
-    </tr>`).join("");
+    </tr>`,
+    )
+    .join("");
 }
 
 async function renderRecentWorkerPayments() {
   const tbody = document.getElementById("recentWorkerPayments");
   if (!tbody) return;
   const recent = allWorkerPayments.slice(0, 8);
-  if (!recent.length) { tbody.innerHTML = emptyRow(4, "No payments yet"); return; }
+  if (!recent.length) {
+    tbody.innerHTML = emptyRow(4, "No payments yet");
+    return;
+  }
   const nameMap = {};
-  allWorkers.forEach(w => nameMap[w.id] = w.name);
-  tbody.innerHTML = recent.map(p => `
+  allWorkers.forEach((w) => (nameMap[w.id] = w.name));
+  tbody.innerHTML = recent
+    .map(
+      (p) => `
     <tr>
       <td>${nameMap[p.worker_id] || "—"}</td>
       <td>${rupee(p.amount)}</td>
       <td>${p.payment_reason}</td>
       <td>${fmtDate(p.payment_date)}</td>
-    </tr>`).join("");
+    </tr>`,
+    )
+    .join("");
 }
 
 // ============================================================
@@ -368,9 +442,14 @@ async function renderRecentWorkerPayments() {
 function renderDueCustomers() {
   const tbody = document.getElementById("dueCustomers");
   if (!tbody) return;
-  const due = allCustomers.filter(c => (c.due_amount || 0) > 0);
-  if (!due.length) { tbody.innerHTML = emptyRow(6, "No due customers 🎉"); return; }
-  tbody.innerHTML = due.map(c => `
+  const due = allCustomers.filter((c) => (c.due_amount || 0) > 0);
+  if (!due.length) {
+    tbody.innerHTML = emptyRow(6, "No due customers 🎉");
+    return;
+  }
+  tbody.innerHTML = due
+    .map(
+      (c) => `
     <tr class="due-row">
       <td><strong>${c.name}</strong></td>
       <td>${c.phone || "—"}</td>
@@ -378,7 +457,9 @@ function renderDueCustomers() {
       <td>${rupee(c.advance_amount)}</td>
       <td><span class="badge badge-due">${rupee(c.due_amount)}</span></td>
       <td>${statusBadge(c.status)}</td>
-    </tr>`).join("");
+    </tr>`,
+    )
+    .join("");
 }
 
 // ============================================================
@@ -387,8 +468,13 @@ function renderDueCustomers() {
 function renderCustomersTable(customers) {
   const tbody = document.getElementById("customersTable");
   if (!tbody) return;
-  if (!customers.length) { tbody.innerHTML = emptyRow(7, "No customers yet"); return; }
-  tbody.innerHTML = customers.map(c => `
+  if (!customers.length) {
+    tbody.innerHTML = emptyRow(7, "No customers yet");
+    return;
+  }
+  tbody.innerHTML = customers
+    .map(
+      (c) => `
     <tr>
       <td><strong>${c.name}</strong></td>
       <td>${c.phone || "—"}</td>
@@ -412,17 +498,24 @@ function renderCustomersTable(customers) {
           </button>
         </div>
       </td>
-    </tr>`).join("");
+    </tr>`,
+    )
+    .join("");
 }
 
 // ============================================================
 //  FILTER CUSTOMERS
 // ============================================================
-window.filterCustomers = function() {
-  const search = (document.getElementById("customerSearch")?.value || "").toLowerCase();
+window.filterCustomers = function () {
+  const search = (
+    document.getElementById("customerSearch")?.value || ""
+  ).toLowerCase();
   const status = document.getElementById("customerStatusFilter")?.value || "";
-  let filtered = allCustomers.filter(c => {
-    const matchSearch = !search || c.name?.toLowerCase().includes(search) || c.phone?.includes(search);
+  let filtered = allCustomers.filter((c) => {
+    const matchSearch =
+      !search ||
+      c.name?.toLowerCase().includes(search) ||
+      c.phone?.includes(search);
     const matchStatus = !status || c.status === status;
     return matchSearch && matchStatus;
   });
@@ -432,7 +525,7 @@ window.filterCustomers = function() {
 // ============================================================
 //  ADD CUSTOMER
 // ============================================================
-window.submitAddCustomer = async function(e) {
+window.submitAddCustomer = async function (e) {
   e.preventDefault();
   const f = e.target;
   try {
@@ -447,12 +540,14 @@ window.submitAddCustomer = async function(e) {
       advance_amount: advance,
       due_amount: Math.max(0, total - advance),
       status: f.status.value,
-      created_at: serverTimestamp()
+      created_at: serverTimestamp(),
     };
     await addDoc(collection(db, "customers"), data);
     // If advance > 0, auto-add payment
     if (advance > 0) {
-      const cSnap = await getDocs(query(collection(db, "customers"), where("phone", "==", data.phone)));
+      const cSnap = await getDocs(
+        query(collection(db, "customers"), where("phone", "==", data.phone)),
+      );
       // We'll add payment from openCustomerPayment flow manually
     }
     showToast("Customer added successfully!");
@@ -466,8 +561,8 @@ window.submitAddCustomer = async function(e) {
 // ============================================================
 //  EDIT CUSTOMER
 // ============================================================
-window.editCustomer = function(id) {
-  const c = allCustomers.find(x => x.id === id);
+window.editCustomer = function (id) {
+  const c = allCustomers.find((x) => x.id === id);
   if (!c) return;
   const f = document.getElementById("editCustomerForm");
   f.elements.id.value = id;
@@ -482,7 +577,7 @@ window.editCustomer = function(id) {
   openModal("editCustomerModal");
 };
 
-window.submitEditCustomer = async function(e) {
+window.submitEditCustomer = async function (e) {
   e.preventDefault();
   const f = e.target;
   const id = f.elements.id.value;
@@ -497,7 +592,7 @@ window.submitEditCustomer = async function(e) {
       total_amount: total,
       advance_amount: advance,
       due_amount: Math.max(0, total - advance),
-      status: f.status.value
+      status: f.status.value,
     });
     showToast("Customer updated!");
     closeModal("editCustomerModal");
@@ -509,8 +604,8 @@ window.submitEditCustomer = async function(e) {
 // ============================================================
 //  VIEW CUSTOMER
 // ============================================================
-window.viewCustomer = function(id) {
-  const c = allCustomers.find(x => x.id === id);
+window.viewCustomer = function (id) {
+  const c = allCustomers.find((x) => x.id === id);
   if (!c) return;
   document.getElementById("viewCustomerContent").innerHTML = `
     <div class="detail-grid">
@@ -520,7 +615,7 @@ window.viewCustomer = function(id) {
       <div class="detail-item"><label>Status</label><p>${statusBadge(c.status)}</p></div>
       <div class="detail-item"><label>Total Amount</label><p>${rupee(c.total_amount)}</p></div>
       <div class="detail-item"><label>Advance Paid</label><p>${rupee(c.advance_amount)}</p></div>
-      <div class="detail-item"><label>Due Amount</label><p style="color:${(c.due_amount||0)>0?'var(--red)':'var(--green)'}">${rupee(c.due_amount)}</p></div>
+      <div class="detail-item"><label>Due Amount</label><p style="color:${(c.due_amount || 0) > 0 ? "var(--red)" : "var(--green)"}">${rupee(c.due_amount)}</p></div>
       <div class="detail-item"><label>Created At</label><p>${fmtDate(c.created_at)}</p></div>
     </div>
     ${c.design_details ? `<div style="margin-top:16px"><div class="detail-item"><label>Design Details</label><p style="white-space:pre-wrap">${c.design_details}</p></div></div>` : ""}
@@ -531,7 +626,7 @@ window.viewCustomer = function(id) {
 // ============================================================
 //  CUSTOMER PAYMENT
 // ============================================================
-window.openCustomerPayment = function(id, name) {
+window.openCustomerPayment = function (id, name) {
   const f = document.getElementById("addCustomerPaymentForm");
   f.elements.customer_id.value = id;
   f.elements.customer_name.value = name;
@@ -539,7 +634,7 @@ window.openCustomerPayment = function(id, name) {
   openModal("addCustomerPaymentModal");
 };
 
-window.submitCustomerPayment = async function(e) {
+window.submitCustomerPayment = async function (e) {
   e.preventDefault();
   const f = e.target;
   const cid = f.elements.customer_id.value;
@@ -553,23 +648,23 @@ window.submitCustomerPayment = async function(e) {
       customer_id: cid,
       amount,
       payment_type: paymentType,
-      date: ts
+      date: ts,
     });
     // Add to transactions
     await addDoc(collection(db, "transactions"), {
       type: "income",
       reference_id: cid,
       amount,
-      created_at: ts
+      created_at: ts,
     });
     // Update customer advance & due
-    const c = allCustomers.find(x => x.id === cid);
+    const c = allCustomers.find((x) => x.id === cid);
     if (c) {
       const newAdvance = (c.advance_amount || 0) + amount;
       const newDue = Math.max(0, (c.total_amount || 0) - newAdvance);
       await updateDoc(doc(db, "customers", cid), {
         advance_amount: newAdvance,
-        due_amount: newDue
+        due_amount: newDue,
       });
     }
     showToast("Payment recorded!");
@@ -586,8 +681,13 @@ window.submitCustomerPayment = async function(e) {
 function renderWorkersTable(workers) {
   const tbody = document.getElementById("workersTable");
   if (!tbody) return;
-  if (!workers.length) { tbody.innerHTML = emptyRow(5, "No workers added yet"); return; }
-  tbody.innerHTML = workers.map(w => `
+  if (!workers.length) {
+    tbody.innerHTML = emptyRow(5, "No workers added yet");
+    return;
+  }
+  tbody.innerHTML = workers
+    .map(
+      (w) => `
     <tr>
       <td><strong>${w.name}</strong></td>
       <td>${w.phone || "—"}</td>
@@ -609,18 +709,29 @@ function renderWorkersTable(workers) {
           </button>
         </div>
       </td>
-    </tr>`).join("");
+    </tr>`,
+    )
+    .join("");
 }
 
-window.filterWorkers = function() {
-  const s = (document.getElementById("workerSearch")?.value || "").toLowerCase();
-  renderWorkersTable(allWorkers.filter(w => !s || w.name?.toLowerCase().includes(s) || w.role?.toLowerCase().includes(s)));
+window.filterWorkers = function () {
+  const s = (
+    document.getElementById("workerSearch")?.value || ""
+  ).toLowerCase();
+  renderWorkersTable(
+    allWorkers.filter(
+      (w) =>
+        !s ||
+        w.name?.toLowerCase().includes(s) ||
+        w.role?.toLowerCase().includes(s),
+    ),
+  );
 };
 
 // ============================================================
 //  ADD WORKER
 // ============================================================
-window.submitAddWorker = async function(e) {
+window.submitAddWorker = async function (e) {
   e.preventDefault();
   const f = e.target;
   try {
@@ -630,7 +741,7 @@ window.submitAddWorker = async function(e) {
       address: f.address.value.trim(),
       role: f.role.value.trim(),
       salary_type: f.salary_type.value,
-      created_at: serverTimestamp()
+      created_at: serverTimestamp(),
     });
     showToast("Worker added!");
     closeModal("addWorkerModal");
@@ -643,8 +754,8 @@ window.submitAddWorker = async function(e) {
 // ============================================================
 //  EDIT WORKER
 // ============================================================
-window.editWorker = function(id) {
-  const w = allWorkers.find(x => x.id === id);
+window.editWorker = function (id) {
+  const w = allWorkers.find((x) => x.id === id);
   if (!w) return;
   const f = document.getElementById("editWorkerForm");
   f.elements.id.value = id;
@@ -656,7 +767,7 @@ window.editWorker = function(id) {
   openModal("editWorkerModal");
 };
 
-window.submitEditWorker = async function(e) {
+window.submitEditWorker = async function (e) {
   e.preventDefault();
   const f = e.target;
   try {
@@ -665,7 +776,7 @@ window.submitEditWorker = async function(e) {
       phone: f.phone.value.trim(),
       address: f.address.value.trim(),
       role: f.role.value.trim(),
-      salary_type: f.salary_type.value
+      salary_type: f.salary_type.value,
     });
     showToast("Worker updated!");
     closeModal("editWorkerModal");
@@ -677,7 +788,7 @@ window.submitEditWorker = async function(e) {
 // ============================================================
 //  WORKER PAYMENT
 // ============================================================
-window.openWorkerPayment = function(id, name) {
+window.openWorkerPayment = function (id, name) {
   const f = document.getElementById("addWorkerPaymentForm");
   f.elements.worker_id.value = id;
   f.elements.worker_name.value = name;
@@ -685,7 +796,7 @@ window.openWorkerPayment = function(id, name) {
   openModal("addWorkerPaymentModal");
 };
 
-window.submitWorkerPayment = async function(e) {
+window.submitWorkerPayment = async function (e) {
   e.preventDefault();
   const f = e.target;
   const wid = f.elements.worker_id.value;
@@ -698,13 +809,13 @@ window.submitWorkerPayment = async function(e) {
       worker_id: wid,
       amount,
       payment_reason: reason,
-      payment_date: ts
+      payment_date: ts,
     });
     await addDoc(collection(db, "transactions"), {
       type: "expense",
       reference_id: wid,
       amount,
-      created_at: ts
+      created_at: ts,
     });
     showToast("Worker payment recorded!");
     closeModal("addWorkerPaymentModal");
@@ -717,42 +828,55 @@ window.submitWorkerPayment = async function(e) {
 // ============================================================
 //  WORKER PAYMENT HISTORY
 // ============================================================
-window.viewWorkerHistory = async function(id, name) {
-  document.getElementById("workerHistoryTitle").textContent = `${name} — Payment History`;
+window.viewWorkerHistory = async function (id, name) {
+  document.getElementById("workerHistoryTitle").textContent =
+    `${name} — Payment History`;
   const tbody = document.getElementById("workerHistoryTable");
   tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;padding:20px;color:#94a3b8">Loading…</td></tr>`;
   openModal("workerHistoryModal");
-  const payments = allWorkerPayments.filter(p => p.worker_id === id);
-  if (!payments.length) { tbody.innerHTML = emptyRow(3, "No payments found"); return; }
-  tbody.innerHTML = payments.map(p => `
+  const payments = allWorkerPayments.filter((p) => p.worker_id === id);
+  if (!payments.length) {
+    tbody.innerHTML = emptyRow(3, "No payments found");
+    return;
+  }
+  tbody.innerHTML = payments
+    .map(
+      (p) => `
     <tr>
       <td>${rupee(p.amount)}</td>
       <td>${p.payment_reason}</td>
       <td>${fmtDate(p.payment_date)}</td>
-    </tr>`).join("");
+    </tr>`,
+    )
+    .join("");
 };
 
 // ============================================================
 //  CONFIRM DELETE
 // ============================================================
 let pendingDelete = null;
-window.confirmDelete = function(type, id, name) {
+window.confirmDelete = function (type, id, name) {
   pendingDelete = { type, id };
-  document.getElementById("confirmText").textContent = `Delete "${name}"? This cannot be undone.`;
+  document.getElementById("confirmText").textContent =
+    `Delete "${name}"? This cannot be undone.`;
   openModal("confirmModal");
 };
-document.getElementById("confirmDeleteBtn")?.addEventListener("click", async () => {
-  if (!pendingDelete) return;
-  const { type, id } = pendingDelete;
-  try {
-    await deleteDoc(doc(db, type === "customer" ? "customers" : "workers", id));
-    showToast(`${type === "customer" ? "Customer" : "Worker"} deleted.`);
-  } catch (err) {
-    showToast("Error: " + err.message, "error");
-  }
-  closeModal("confirmModal");
-  pendingDelete = null;
-});
+document
+  .getElementById("confirmDeleteBtn")
+  ?.addEventListener("click", async () => {
+    if (!pendingDelete) return;
+    const { type, id } = pendingDelete;
+    try {
+      await deleteDoc(
+        doc(db, type === "customer" ? "customers" : "workers", id),
+      );
+      showToast(`${type === "customer" ? "Customer" : "Worker"} deleted.`);
+    } catch (err) {
+      showToast("Error: " + err.message, "error");
+    }
+    closeModal("confirmModal");
+    pendingDelete = null;
+  });
 
 // ============================================================
 //  TRANSACTIONS TABLE
@@ -760,35 +884,55 @@ document.getElementById("confirmDeleteBtn")?.addEventListener("click", async () 
 function renderTransactionsTable(txs) {
   const tbody = document.getElementById("transactionsTable");
   if (!tbody) return;
-  if (!txs.length) { tbody.innerHTML = emptyRow(4, "No transactions yet"); return; }
-  tbody.innerHTML = txs.map(t => `
+  if (!txs.length) {
+    tbody.innerHTML = emptyRow(4, "No transactions yet");
+    return;
+  }
+  tbody.innerHTML = txs
+    .map(
+      (t) => `
     <tr>
-      <td><span class="badge ${t.type === 'income' ? 'badge-income' : 'badge-expense'}">${t.type}</span></td>
+      <td><span class="badge ${t.type === "income" ? "badge-income" : "badge-expense"}">${t.type}</span></td>
       <td style="font-size:12px;color:var(--text-3)">${t.reference_id || "—"}</td>
       <td>${rupee(t.amount)}</td>
       <td>${fmtDate(t.created_at)}</td>
-    </tr>`).join("");
+    </tr>`,
+    )
+    .join("");
   // Update totals
-  const income = txs.filter(t => t.type === "income").reduce((s, t) => s + (t.amount || 0), 0);
-  const expense = txs.filter(t => t.type === "expense").reduce((s, t) => s + (t.amount || 0), 0);
+  const income = txs
+    .filter((t) => t.type === "income")
+    .reduce((s, t) => s + (t.amount || 0), 0);
+  const expense = txs
+    .filter((t) => t.type === "expense")
+    .reduce((s, t) => s + (t.amount || 0), 0);
   const incEl = document.getElementById("txIncomeTotal");
   const expEl = document.getElementById("txExpenseTotal");
   if (incEl) incEl.textContent = rupee(income);
   if (expEl) expEl.textContent = rupee(expense);
 }
 
-window.filterTransactions = function() {
+window.filterTransactions = function () {
   const type = document.getElementById("txTypeFilter")?.value || "";
   const date = document.getElementById("txDateFilter")?.value || "";
-  let filtered = allTransactions.filter(t => {
+  let filtered = allTransactions.filter((t) => {
     const matchType = !type || t.type === type;
-    const matchDate = !date || (t.created_at && fmtDate(t.created_at).includes(new Date(date).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })));
+    const matchDate =
+      !date ||
+      (t.created_at &&
+        fmtDate(t.created_at).includes(
+          new Date(date).toLocaleDateString("en-IN", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          }),
+        ));
     return matchType && matchDate;
   });
   renderTransactionsTable(filtered);
 };
 
-window.clearTxFilters = function() {
+window.clearTxFilters = function () {
   document.getElementById("txTypeFilter").value = "";
   document.getElementById("txDateFilter").value = "";
   renderTransactionsTable(allTransactions);
@@ -804,24 +948,42 @@ function populateReportYears() {
   sel.innerHTML = "";
   for (let y = cur; y >= cur - 4; y--) {
     const opt = document.createElement("option");
-    opt.value = y; opt.textContent = y;
+    opt.value = y;
+    opt.textContent = y;
     sel.appendChild(opt);
   }
 }
 
-window.loadReports = function() {
-  const year = parseInt(document.getElementById("reportYear")?.value || new Date().getFullYear());
-  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+window.loadReports = function () {
+  const year = parseInt(
+    document.getElementById("reportYear")?.value || new Date().getFullYear(),
+  );
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
   const incomeByMonth = new Array(12).fill(0);
   const expenseByMonth = new Array(12).fill(0);
 
-  allCustomerPayments.forEach(p => {
+  allCustomerPayments.forEach((p) => {
     const d = p.date?.toDate ? p.date.toDate() : new Date(p.date);
-    if (d.getFullYear() === year) incomeByMonth[d.getMonth()] += (p.amount || 0);
+    if (d.getFullYear() === year) incomeByMonth[d.getMonth()] += p.amount || 0;
   });
-  allWorkerPayments.forEach(p => {
-    const d = p.payment_date?.toDate ? p.payment_date.toDate() : new Date(p.payment_date);
-    if (d.getFullYear() === year) expenseByMonth[d.getMonth()] += (p.amount || 0);
+  allWorkerPayments.forEach((p) => {
+    const d = p.payment_date?.toDate
+      ? p.payment_date.toDate()
+      : new Date(p.payment_date);
+    if (d.getFullYear() === year) expenseByMonth[d.getMonth()] += p.amount || 0;
   });
 
   const profitByMonth = incomeByMonth.map((inc, i) => inc - expenseByMonth[i]);
@@ -829,24 +991,32 @@ window.loadReports = function() {
   const totalExp = expenseByMonth.reduce((s, v) => s + v, 0);
   const totalProfit = totalInc - totalExp;
 
-  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  const set = (id, val) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val;
+  };
   set("annualIncome", rupee(totalInc));
   set("annualExpenses", rupee(totalExp));
   const ap = document.getElementById("annualProfit");
-  if (ap) { ap.textContent = rupee(totalProfit); ap.style.color = totalProfit >= 0 ? "var(--green)" : "var(--red)"; }
+  if (ap) {
+    ap.textContent = rupee(totalProfit);
+    ap.style.color = totalProfit >= 0 ? "var(--green)" : "var(--red)";
+  }
 
   // Monthly table
   const tbody = document.getElementById("reportTable");
   if (tbody) {
-    tbody.innerHTML = months.map((m, i) => {
-      const profit = profitByMonth[i];
-      return `<tr>
+    tbody.innerHTML = months
+      .map((m, i) => {
+        const profit = profitByMonth[i];
+        return `<tr>
         <td>${m} ${year}</td>
         <td>${rupee(incomeByMonth[i])}</td>
         <td>${rupee(expenseByMonth[i])}</td>
-        <td class="${profit >= 0 ? 'profit-positive' : 'profit-negative'}">${rupee(profit)}</td>
+        <td class="${profit >= 0 ? "profit-positive" : "profit-negative"}">${rupee(profit)}</td>
       </tr>`;
-    }).join("");
+      })
+      .join("");
   }
 
   // Chart
@@ -867,7 +1037,7 @@ function drawChart(labels, income, expenses, profit) {
   const chartW = W - padding.left - padding.right;
   const chartH = H - padding.top - padding.bottom;
 
-  const allVals = [...income, ...expenses, ...profit.map(v => Math.abs(v))];
+  const allVals = [...income, ...expenses, ...profit.map((v) => Math.abs(v))];
   const maxVal = Math.max(...allVals, 1);
 
   const scaleY = (v) => padding.top + chartH - (v / maxVal) * chartH;
@@ -878,14 +1048,21 @@ function drawChart(labels, income, expenses, profit) {
   ctx.lineWidth = 1;
   for (let i = 0; i <= 4; i++) {
     const y = padding.top + (chartH / 4) * i;
-    ctx.beginPath(); ctx.moveTo(padding.left, y); ctx.lineTo(padding.left + chartW, y); ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(padding.left, y);
+    ctx.lineTo(padding.left + chartW, y);
+    ctx.stroke();
     const val = maxVal - (maxVal / 4) * i;
-    ctx.fillStyle = "#94a3b8"; ctx.font = "11px DM Sans"; ctx.textAlign = "right";
-    ctx.fillText("₹" + Math.round(val / 1000) + "k", padding.left - 8, y + 4);
+    ctx.fillStyle = "#94a3b8";
+    ctx.font = "11px DM Sans";
+    ctx.textAlign = "right";
+    ctx.fillText("৳" + Math.round(val / 1000) + "k", padding.left - 8, y + 4);
   }
 
   // X labels
-  ctx.fillStyle = "#94a3b8"; ctx.font = "11px DM Sans"; ctx.textAlign = "center";
+  ctx.fillStyle = "#94a3b8";
+  ctx.font = "11px DM Sans";
+  ctx.textAlign = "center";
   labels.forEach((l, i) => {
     ctx.fillText(l, padding.left + i * stepX, H - 10);
   });
@@ -893,8 +1070,10 @@ function drawChart(labels, income, expenses, profit) {
   // Draw line
   const drawLine = (data, color) => {
     ctx.beginPath();
-    ctx.strokeStyle = color; ctx.lineWidth = 2.5;
-    ctx.lineJoin = "round"; ctx.lineCap = "round";
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2.5;
+    ctx.lineJoin = "round";
+    ctx.lineCap = "round";
     data.forEach((v, i) => {
       const x = padding.left + i * stepX;
       const y = scaleY(Math.max(0, v));
@@ -905,7 +1084,13 @@ function drawChart(labels, income, expenses, profit) {
     ctx.fillStyle = color;
     data.forEach((v, i) => {
       ctx.beginPath();
-      ctx.arc(padding.left + i * stepX, scaleY(Math.max(0, v)), 3.5, 0, Math.PI * 2);
+      ctx.arc(
+        padding.left + i * stepX,
+        scaleY(Math.max(0, v)),
+        3.5,
+        0,
+        Math.PI * 2,
+      );
       ctx.fill();
     });
   };
